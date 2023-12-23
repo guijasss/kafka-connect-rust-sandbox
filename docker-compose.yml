@@ -1,0 +1,16 @@
+version: '3'
+networks:
+  network-services:
+    driver: bridge
+
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: data
+      MONGO_INITDB_ROOT_PASSWORD: mypass
+    networks:
+      - network-services
+    ports:
+      - "27017:27017"

@@ -1,0 +1,36 @@
+{
+    "id": "1234-5678-9012-3456",
+    "email": "example@mail.com",
+    "username": "exampleUser",
+    "profile": {
+        "name": "John Doe",
+        "address": {
+            "street": "123 Main St",
+            "city": "Cityville",
+            "state": "ST"
+        }
+    },
+    "purchase": {
+        "id": "abcd-efgh-ijkl-mnop",
+        "employee": "Employee Name",
+        "store": "Store Name",
+        "products": [
+            {
+                "name": "Product 1",
+                "size": "M",
+                "extra": ["Onion", "Cheese"]
+            },
+            {
+                "name": "Product 2",
+                "size": "L",
+                "extra": ["Meat", "French Fries"]
+            }
+        ]
+    },
+    "createdAt": "2022-01-01T12:00:00Z",
+    "updatedAt": "2022-01-02T12:00:00Z",
+    "payment": {
+        "method": "Credit Card",
+        "date": "2022-01-03T12:00:00Z"
+    }
+}
