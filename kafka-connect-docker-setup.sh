@@ -1,0 +1,1 @@
+mkdir -p path/to/project/data/db

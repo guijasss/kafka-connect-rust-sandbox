@@ -54,7 +54,7 @@ async fn main() {
         }
     };
 
-    let mongodb_uri: String = "mongodb://data:mypass@localhost:27017/".to_string();
+    let mongodb_uri: String = "mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true".to_string();
     let client: Client = Client::with_uri_str(&mongodb_uri).await.expect("Failed to connect to MongoDB");
     let db: Database = client.database("master");
 

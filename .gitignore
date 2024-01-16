@@ -1,3 +1,6 @@
 fast-food-store/target
 .vscode/
 .env
+data/
+app/target/
+archive/
