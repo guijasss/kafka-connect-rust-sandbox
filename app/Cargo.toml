@@ -1,5 +1,5 @@
 [package]
-name = "fast-food-store"
+name = "app"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,3 +11,5 @@ serde_json = "1.0.108"
 chrono = { version= "0.4.31", features = ["serde"]}
 mongodb = "1.1"
 tokio = { version = "0.2.22", features = ["full"] }
+bson = "1.0"
+rand = "0.8"

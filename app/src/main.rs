@@ -2,6 +2,7 @@ use crate::models::transaction::{Address, Payment, Product, Profile, Purchase, T
 use chrono::Utc;
 use mongodb::{Client, Database};
 use mongodb::bson::{DateTime, to_document};
+use rand::Rng;
 
 pub mod models;
 
@@ -13,6 +14,12 @@ async fn insert_data_to_mongodb(data: &Transaction, db: &Database) -> mongodb::e
     collection.insert_one(document, None).await?;
 
     Ok(())
+}
+
+fn generate_random_tenant_id() -> String {
+    let mut rng = rand::thread_rng();
+    let tenant_number = rng.gen_range(1..=3); // Adjust the range based on your requirement
+    format!("tenant{}", tenant_number)
 }
 
 #[tokio::main]
@@ -56,7 +63,8 @@ async fn main() {
 
     let mongodb_uri: String = "mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true".to_string();
     let client: Client = Client::with_uri_str(&mongodb_uri).await.expect("Failed to connect to MongoDB");
-    let db: Database = client.database("master");
+    let tenant_id = generate_random_tenant_id();
+    let db: Database = client.database(&tenant_id);
 
     match insert_data_to_mongodb(&data, &db).await {
         Ok(_) => println!("Data inserted into MongoDB successfully"),
