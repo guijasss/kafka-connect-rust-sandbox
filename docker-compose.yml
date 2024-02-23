@@ -1,7 +1,65 @@
-version: "3.8"
-
+version: '2'
 services:
-  mongo1:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.5.3
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+
+  kafka:
+    image: confluentinc/cp-enterprise-kafka:5.5.3
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181      
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    links:
+      - zookeeper
+    ports:
+      - '9092:9092'
+
+  kafka-connect:
+    container_name: kafka-connect
+    image: debezium/connect:1.8
+    ports:
+      - '8083:8083'
+    links:
+      - kafka
+      - zookeeper
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - GROUP_ID=medium_debezium
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_statuses
+      - CONFIG_STORAGE_REPLICATION_FACTOR=1
+      - OFFSET_STORAGE_REPLICATION_FACTOR=1
+      - STATUS_STORAGE_REPLICATION_FACTOR=1
+
+  connector-sender:
+    container_name: connector-sender
+    image: confluentinc/cp-kafka-connect:5.5.3
+    volumes:
+      - ./config:/config
+    depends_on:
+      - kafka-connect
+    command:
+        - bash
+        - -c
+        - |
+          echo "Wainting for kafka connect to start..."
+          until [[ "$$(curl -s -o /dev/null -w %{http_code} kafka-connect:8083/connectors)" -eq 200 ]]; do
+            sleep 1
+          done
+          echo -e "Sending connector"
+          curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" kafka-connect:8083/connectors/ -d @/conf/mongo-properties.json
+
+  mongo:
     image: mongo:7.0
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
     ports:
@@ -14,9 +72,8 @@ services:
       timeout: 30s
       retries: 30
     volumes:
-      - "mongo1_data:/data/db"
-      - "mongo1_config:/data/configdb"
+      - "mongo:/data/db"
+      - "mongo:/data/configdb"
 
 volumes:
-  mongo1_data:
-  mongo1_config:
+  mongo:
