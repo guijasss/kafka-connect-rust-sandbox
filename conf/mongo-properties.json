@@ -1,0 +1,9 @@
+{
+    "name": "mongo-xqdl",
+    "config": {
+        "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+        "mongodb.connection.string": "mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true",
+        "topic.prefix": "kafka",
+        "collection.include.list": "*.transactions"
+    }
+}
